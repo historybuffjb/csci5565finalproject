@@ -31,5 +31,5 @@ class MSHMATGROUP(AbstractGroup):
 
     def pov_convert(self):
         """ Returns important information """
-        spec_details = {"faces": self.faces}
+        spec_details = {"faces": self.faces, "nfaces": len(self.faces)}
         return {**super().pov_convert(), **spec_details}

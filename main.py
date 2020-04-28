@@ -21,7 +21,7 @@ def main():
     """ main """
     # pathlist = Path(__file__).resolve().parent / "test_models"
     # pathlist = pathlist.glob("**/*.3ds")
-    pathlist = [Path(__file__).resolve().parent / "test_models" / "hubble" / "hst.3ds"]
+    pathlist = [Path(__file__).resolve().parent / "test_models" / "spaceship.3ds"]
     for path in pathlist:
         # because path is object not string
         print(f"Getting 3d model for {path}")

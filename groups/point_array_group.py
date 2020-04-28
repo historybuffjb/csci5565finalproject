@@ -32,5 +32,5 @@ class POINTARRAY(AbstractGroup):
 
     def pov_convert(self):
         """ Returns important information """
-        spec_details = {"vertices": self.vertices}
+        spec_details = {"vertices": self.vertices, "nvertices": len(self.vertices)}
         return {**super().pov_convert(), **spec_details}

@@ -17,14 +17,14 @@ class TEXVERTS(AbstractGroup):
         super().__init__(parent, data)
         count = unpack("H", data[:2])[0]
         data = data[2:]
-        self.texcoords = []
+        self.vertices = []
         for _ in range(count):
             x_val, y_val = unpack("ff", data[:8])
             data = data[8:]
-            self.texcoords.append(Vec2(x_val, 1.0 - y_val))
+            self.vertices.append(Vec2(x_val, 1.0 - y_val))
         self.size = 2 + count * 2 * 4
 
     def pov_convert(self):
         """ Returns important information """
-        spec_details = {"texcoords": self.texcoords}
+        spec_details = {"vertices": self.vertices, "nvertices": len(self.vertices)}
         return {**super().pov_convert(), **spec_details}

@@ -12,4 +12,3 @@ from groups.smooth_group_group import SMOOTHGROUP  # noqa: F401
 from groups.kfdata_group import KFDATA  # noqa: F401
 from groups.object_node_tag_group import OBJECTNODETAG  # noqa: F401
 from groups.node_hdr_group import NODEHDR  # noqa: F401
-from groups.n_camera_group import NCAMERA  # noqa: F401

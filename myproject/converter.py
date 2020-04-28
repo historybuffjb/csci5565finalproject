@@ -14,7 +14,8 @@ class Converter:
         """ Converts chunks to pov format """
         self._iter_chunks(self.chunks)
 
-    def _handle_chunk(self, chunk):
+    @staticmethod
+    def _handle_chunk(chunk):
         """ Handles one given chunk """
         if chunk.name in CONVERTER_DICT:
             print(f"Name: {chunk.name} Return: {chunk.data.pov_convert()}")

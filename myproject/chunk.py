@@ -17,7 +17,9 @@ class Chunk:
         if chunk_id in GROUP_DICT:
             self.data = GROUP_DICT[chunk_id](self, data)
             self.name = self.data.__class__.__name__
-            self._parse_chunks(data[self.data.size :])
+            # fmt: off
+            self._parse_chunks(data[self.data.size:])
+            # fmt: on
 
     def _parse_chunks(self, data):
         while data:

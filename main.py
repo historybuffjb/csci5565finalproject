@@ -16,6 +16,7 @@ from myproject.parser import Parser
 from myproject.converter import Converter
 
 
+# pylint: disable=W0703
 def main():
     """ main """
     # pathlist = Path(__file__).resolve().parent / "test_models"

@@ -9,6 +9,7 @@ neovim = "*"
 pynvim = "*"
 pylint = "*"
 black = "*"
+pre-commit = "*"
 
 [packages]
 ez-setup = "*"

@@ -19,7 +19,6 @@ class MSHMATGROUP(AbstractGroup):
         data = data[index:]
         count = unpack("H", data[:2])[0]
         data = data[2:]
-        # todo get indices
         self.faces = []
         for _ in range(count):
             face_index = unpack("H", data[:2])[0]

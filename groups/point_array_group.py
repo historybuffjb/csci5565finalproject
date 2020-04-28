@@ -17,20 +17,22 @@ class POINTARRAY(AbstractGroup):
             x_val, y_val, z_val = unpack("fff", data[: 3 * 4])
             index = 3 * 4
             data = data[index:]
-            self.vertices.append(Vec3(x_val, z_val, -y_val))
+            self.vertices.append([x_val, z_val, -y_val])
         self.size = 2 + count * 3 * 4
 
         for counter_1, value_1 in enumerate(self.vertices):
             index = counter_1 + 1
+            value_1_vec = Vec3(value_1[0], value_1[1], value_1[2])
             for counter_2, value_2 in list(enumerate(self.vertices))[counter_1:]:
+                value_2_vec = Vec3(value_2[0], value_2[1], value_2[2])
                 if (
-                    value_1.x_val == value_2.x_val
-                    and value_1.y_val == value_2.y_val
-                    and value_1.z_val == value_2.z_val
+                    value_1_vec.x_val == value_2_vec.x_val
+                    and value_1_vec.y_val == value_2_vec.y_val
+                    and value_1_vec.z_val == value_2_vec.z_val
                 ):
                     self.vertices[counter_2] = value_1
 
     def pov_convert(self):
         """ Returns important information """
-        spec_details = {"vertices": self.vertices, "nvertices": len(self.vertices)}
+        spec_details = {"nvertices": len(self.vertices), "vertices": self.vertices}
         return {**super().pov_convert(), **spec_details}

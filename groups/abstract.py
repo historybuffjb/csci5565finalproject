@@ -16,8 +16,7 @@ class AbstractGroup:
     def pov_convert(self):
         """ Converts data chunks into json understood by pov """
         return {
-            "name": self.name,
+            "name": self.name.decode("utf-8") if self.name else None,
             "size": self.size,
-            "classname": self.__class__.__name__,
-            "parent": self.parent,
+            "parent": self.parent.data.__class__.__name__,
         }

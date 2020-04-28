@@ -7,7 +7,6 @@
 
 from struct import unpack
 from groups.abstract import AbstractGroup
-from helpers.vectors import Vec2
 
 
 class TEXVERTS(AbstractGroup):
@@ -21,10 +20,10 @@ class TEXVERTS(AbstractGroup):
         for _ in range(count):
             x_val, y_val = unpack("ff", data[:8])
             data = data[8:]
-            self.vertices.append(Vec2(x_val, 1.0 - y_val))
+            self.vertices.append([x_val, 1.0 - y_val])
         self.size = 2 + count * 2 * 4
 
     def pov_convert(self):
         """ Returns important information """
-        spec_details = {"vertices": self.vertices, "nvertices": len(self.vertices)}
+        spec_details = {"nvertices": len(self.vertices), "vertices": self.vertices}
         return {**super().pov_convert(), **spec_details}

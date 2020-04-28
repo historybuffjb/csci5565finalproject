@@ -30,5 +30,5 @@ class FACEARRAY(AbstractGroup):
 
     def pov_convert(self):
         """ Returns relevant information """
-        spec_details = {"faces": self.faces, "nfaces": len(self.faces)}
+        spec_details = {"nfaces": len(self.faces), "faces": self.faces}
         return {**super().pov_convert(), **spec_details}

@@ -13,15 +13,17 @@
 from pathlib import Path
 from traceback import format_exc
 from myproject.parser import Parser
-from myproject.converter import Converter
+from myproject.json_converter import JSONConverter
+from myproject.pov_converter import PovConverter
 
 
 # pylint: disable=W0703
 def main():
     """ main """
-    # pathlist = Path(__file__).resolve().parent / "test_models"
+    root_dir = Path(__file__).resolve().parent
+    # pathlist = root_dir / "test_models"
     # pathlist = pathlist.glob("**/*.3ds")
-    pathlist = [Path(__file__).resolve().parent / "test_models" / "spaceship.3ds"]
+    pathlist = [root_dir / "test_models" / "spaceship.3ds"]
     for path in pathlist:
         # because path is object not string
         print(f"Getting 3d model for {path}")
@@ -29,8 +31,13 @@ def main():
             parser = Parser(path)
             parser.parse()
             # parser.print_chunks()
-            converter = Converter(parser.chunks)
-            converter.convert()
+            json_converter = JSONConverter(parser.chunks)
+            json_converter.convert_json()
+            json_folder = root_dir / "jsons"
+            json_file = f"{path.stem}.json"
+            json_converter.save_json(json_folder, json_file)
+            pov_converter = PovConverter(json_folder / json_file)
+            pov_converter.convert_pov()
         except Exception:
             print(f"Failed to load model: {format_exc()}")
         print("*" * 20)

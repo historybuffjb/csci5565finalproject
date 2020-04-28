@@ -14,6 +14,12 @@ from groups import (
     KFDATA,
     OBJECTNODETAG,
     NODEHDR,
+    M3DVERSION,
+    MESHVERSION,
+    MATENTRY,
+    MASTERSCALE,
+    POINTFLAGARRAY,
+    MESHCOLOR,
 )
 
 
@@ -31,20 +37,26 @@ GROUP_DICT = {
     0xB000: KFDATA,
     0xB002: OBJECTNODETAG,
     0xB010: NODEHDR,
+    0x2: M3DVERSION,
+    0x3D3E: MESHVERSION,
+    0xAFFF: MATENTRY,
+    0x0100: MASTERSCALE,
+    0x4111: POINTFLAGARRAY,
+    0x4165: MESHCOLOR,
 }
 
-CONVERTER_DICT = {
-    "M3DMAGIC": None,
-    "MDATA": None,
-    "NAMEDOBJECT": None,
-    "NTRIOBJECT": None,
-    "POINTARRAY": None,
-    "FACEARRAY": None,
-    "TEXVERTS": None,
-    "MESHMATRIX": None,
-    "MSHMATGROUP": None,
-    "SMOOTHGROUP": None,
-    "KFDATA": None,
-    "OBJECTNODETAG": None,
-    "NODEHDR": None,
-}
+CONVERTER_LIST = [
+    "M3DMAGIC",
+    "MDATA",
+    "NAMEDOBJECT",
+    "NTRIOBJECT",
+    "POINTARRAY",
+    "FACEARRAY",
+    "TEXVERTS",
+    "MESHMATRIX",
+    "MSHMATGROUP",
+    "SMOOTHGROUP",
+    "KFDATA",
+    "OBJECTNODETAG",
+    "NODEHDR",
+]

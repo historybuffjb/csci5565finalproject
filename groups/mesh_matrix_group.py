@@ -4,7 +4,6 @@
 
 from struct import unpack
 from groups.abstract import AbstractGroup
-from helpers.vectors import Vec3
 
 
 class MESHMATRIX(AbstractGroup):
@@ -17,7 +16,7 @@ class MESHMATRIX(AbstractGroup):
             "f" * 12, data
         )
         self.rot = [r11, r12, r13, r21, r22, r23, r31, r32, r33]
-        self.center = Vec3(x_coord, z_coord, -y_coord)
+        self.center = [x_coord, z_coord, -y_coord]
 
     def pov_convert(self):
         """ Returns important information """

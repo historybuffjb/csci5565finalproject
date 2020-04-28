@@ -12,3 +12,9 @@ from groups.smooth_group_group import SMOOTHGROUP  # noqa: F401
 from groups.kfdata_group import KFDATA  # noqa: F401
 from groups.object_node_tag_group import OBJECTNODETAG  # noqa: F401
 from groups.node_hdr_group import NODEHDR  # noqa: F401
+from groups.m3d_version_group import M3DVERSION  # noqa: F401
+from groups.mesh_version_group import MESHVERSION  # noqa: F401
+from groups.mat_entry_group import MATENTRY  # noqa: F401
+from groups.master_scale_group import MASTERSCALE  # noqa: F401
+from groups.point_flag_array_group import POINTFLAGARRAY  # noqa: F401
+from groups.mesh_color_group import MESHCOLOR  # noqa: F401

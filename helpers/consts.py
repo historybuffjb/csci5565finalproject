@@ -1,0 +1,50 @@
+""" Helper constants """
+
+from groups import (
+    M3DMAGIC,
+    MDATA,
+    NAMEDOBJECT,
+    NTRIOBJECT,
+    POINTARRAY,
+    FACEARRAY,
+    TEXVERTS,
+    MESHMATRIX,
+    MSHMATGROUP,
+    SMOOTHGROUP,
+    KFDATA,
+    OBJECTNODETAG,
+    NODEHDR,
+)
+
+
+GROUP_DICT = {
+    0x4D4D: M3DMAGIC,
+    0x3D3D: MDATA,
+    0x4000: NAMEDOBJECT,
+    0x4100: NTRIOBJECT,
+    0x4110: POINTARRAY,
+    0x4120: FACEARRAY,
+    0x4140: TEXVERTS,
+    0x4160: MESHMATRIX,
+    0x4130: MSHMATGROUP,
+    0x4150: SMOOTHGROUP,
+    0xB000: KFDATA,
+    0xB002: OBJECTNODETAG,
+    0xB010: NODEHDR,
+}
+
+CONVERTER_DICT = {
+    "M3DMAGIC": None,
+    "MDATA": None,
+    "NAMEDOBJECT": None,
+    "NTRIOBJECT": None,
+    "POINTARRAY": None,
+    "FACEARRAY": None,
+    "TEXVERTS": None,
+    "MESHMATRIX": None,
+    "MSHMATGROUP": None,
+    "SMOOTHGROUP": None,
+    "KFDATA": None,
+    "OBJECTNODETAG": None,
+    "NODEHDR": None,
+}

@@ -1,0 +1,10 @@
+{
+  "python.jediEnabled": false,
+  "python.linting.pylintEnabled": true,
+  "python.linting.pylintUseMinimalCheckers": false,
+  "python.linting.flake8Enabled": true,
+  "python.linting.enabled": true,
+  "python.formatting.provider": "black",
+  "python.formatting.blackArgs": ["--line-length 100"],
+  "coc.preferences.formatOnSaveFiletypes": ["python"]
+}

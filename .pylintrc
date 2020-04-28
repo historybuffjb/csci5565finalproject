@@ -1,0 +1,19 @@
+[MESSAGES CONTROL]
+disable=bad-continuation, too-many-lines, too-few-public-methods
+
+[FORMAT]
+max-line-length=100
+
+[TYPECHECK]
+ignored-classes=PurePath
+
+[SIMILARITIES]
+min-similarity-lines=8
+ignore-comments=yes
+ignore-docstrings=yes
+ignore-imports=no
+
+[DESIGN]
+max-attributes=50
+max-args=10
+max-public-methods=50

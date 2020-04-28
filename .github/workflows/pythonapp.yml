@@ -26,7 +26,9 @@ jobs:
         pipenv install --dev
     - name: Lint with flake8
       run: |
+        pipenv shell
         flake8 .
     - name: Lint with Pylint
       run: |
+        pipenv shell
         pylint .

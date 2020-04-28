@@ -3,6 +3,7 @@ repos:
     rev: v2.4.4
     hooks:
     -   id: pylint
+        exclude: ^venv/
         args:
         - --rcfile=.pylintrc
 -   repo: https://github.com/ambv/black

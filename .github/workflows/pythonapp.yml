@@ -28,4 +28,4 @@ jobs:
         python -m flake8 .
     - name: Lint with Pylint
       run: |
-        python -m pylint .
+        python -m pylint groups/*.py helpers/*.py myproject/*.py *.py

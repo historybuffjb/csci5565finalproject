@@ -30,7 +30,7 @@ def main():
         try:
             parser = Parser(path)
             parser.parse()
-            # parser.print_chunks()
+            parser.print_chunks()
             json_converter = JSONConverter(parser.chunks)
             json_converter.convert_json()
             json_folder = root_dir / "jsons"

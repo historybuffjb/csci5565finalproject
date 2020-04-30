@@ -20,7 +20,7 @@ class Parser:
         chunk_id = unpack("H", data[:2])[0]
         # length = unpack("i", data[2:6])[0]
         data = data[6:]
-        self.chunks = Chunk(self, chunk_id, data)
+        self.chunks = Chunk(None, chunk_id, data)
 
     def print_chunks(self):
         """ Prints all chunks """

@@ -18,5 +18,7 @@ class AbstractGroup:
         return {
             "name": self.name.decode("utf-8") if self.name else None,
             "size": self.size,
-            "parent": self.parent.data.__class__.__name__,
+            "parent": self.parent.parent.data.__class__.__name__
+            if self.parent.parent
+            else None,
         }

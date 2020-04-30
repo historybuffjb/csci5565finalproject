@@ -21,9 +21,9 @@ from myproject.pov_converter import PovConverter
 def main():
     """ main """
     root_dir = Path(__file__).resolve().parent
-    # pathlist = root_dir / "test_models"
-    # pathlist = pathlist.glob("**/*.3ds")
-    pathlist = [root_dir / "test_models" / "spaceship.3ds"]
+    pathlist = root_dir / "test_models"
+    pathlist = pathlist.glob("**/*.3ds")
+    # pathlist = [root_dir / "test_models" / "shuttle.3ds"]
     for path in pathlist:
         # because path is object not string
         print(f"Getting 3d model for {path}")
@@ -38,6 +38,9 @@ def main():
             json_converter.save_json(json_folder, json_file)
             pov_converter = PovConverter(json_folder / json_file)
             pov_converter.convert_pov()
+            pov_folder = root_dir / "povs"
+            pov_file = f"{path.stem}.pov"
+            pov_converter.save_pov(pov_folder, pov_file)
         except Exception:
             print(f"Failed to load model: {format_exc()}")
         print("*" * 20)

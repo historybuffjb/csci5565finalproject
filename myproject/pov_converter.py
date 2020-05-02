@@ -1,5 +1,5 @@
 """ Converts a specific json file into a pov file """
-
+import sys
 from pathlib import Path
 from json import load
 
@@ -21,7 +21,6 @@ class PovConverter:
         self._generate_camera()
         self._generate_background()
         self._generate_plane()
-        self._generate_texture()
         self._generate_mesh()
         self._generate_object()
 
@@ -48,9 +47,19 @@ light_source {
         """ Generates a camera for pov file """
         values = self._json_data["POINTARRAY"]
         multiplier = 8
-        x_val = abs(values["maxx"]) * multiplier
-        y_val = abs(values["maxy"]) * multiplier
-        z_val = abs(values["maxz"]) * multiplier
+        max_x = ~sys.maxsize
+        max_y = ~sys.maxsize
+        max_z = ~sys.maxsize
+        for value in values:
+            if abs(value["maxx"]) > max_x:
+                max_x = abs(value["maxx"])
+            if abs(value["maxy"]) > max_y:
+                max_y = abs(value["maxy"])
+            if abs(value["maxz"]) > max_z:
+                max_z = abs(value["maxz"])
+        x_val = max_x * multiplier
+        y_val = max_y * multiplier
+        z_val = max_z * multiplier
         location = f"<{x_val}, {y_val}, {z_val}>"
         self._final_file_format += f"""
 camera {{
@@ -74,14 +83,18 @@ background {
 
     def _generate_plane(self):
         """ Generates a background for pov file """
-        plane_val = (
-            min(
-                self._json_data["POINTARRAY"]["minx"],
-                self._json_data["POINTARRAY"]["miny"],
-                self._json_data["POINTARRAY"]["minz"],
-            )
-            * 2
-        )
+        values = self._json_data["POINTARRAY"]
+        min_x = sys.maxsize
+        min_y = sys.maxsize
+        min_z = sys.maxsize
+        for value in values:
+            if value["minx"] < min_x:
+                min_x = value["minx"]
+            if value["miny"] < min_y:
+                min_y = value["miny"]
+            if value["minz"] < min_z:
+                min_z = value["minz"]
+        plane_val = min(min_x, min_y, min_z) * 2
         self._final_file_format += f"""
 plane {{
   z, {plane_val}
@@ -111,54 +124,67 @@ plane {{
 }}
         """
 
-    def _generate_texture(self):
+    def _generate_texture(self, counter):
         """ Generates a texture for pov file """
-        self._final_file_format += """
-#declare Mesh_Texture=
-  texture{
-    pigment{
+        self._final_file_format += f"""
+#declare Mesh_Texture_{counter}=
+  texture{{
+    pigment{{
       uv_mapping
       spiral2 8
-      color_map {
+      color_map {{
         [0.5 color rgb 1 ]
         [0.5 color rgb <0,0,0.2> ]
-      }
+      }}
       scale 0.8
-    }
-    finish {
+    }}
+    finish {{
       specular 0.3
       roughness 0.01
-    }
-}
+    }}
+}}
         """
 
     def _generate_mesh(self):
         """ Generates a mesh for pov file """
+        point_iters = self._json_data["POINTARRAY"]
+        face_iters = self._json_data["FACEARRAY"]
+        for counter, value in enumerate(point_iters, 0):
+            self._generate_texture(counter)
+            self._mesh_string(
+                value["vertices"],
+                face_iters[counter]["faces"],
+                value["nvertices"],
+                face_iters[counter]["nfaces"],
+                counter,
+            )
+
+    def _mesh_string(self, vertices, faces, num_vertices, num_faces, counter):
+        """ Generates mesh strings for vertices and faces lists """
+        self._generate_texture(counter)
         self._final_file_format += f"""
-#declare Mesh=
+#declare Mesh_{counter}=
 mesh2 {{
     vertex_vectors {{
-        {self._json_data["POINTARRAY"]["nvertices"]},
-        {self._handle_point_array(self._json_data["POINTARRAY"]["vertices"], 2)}
+        {num_vertices},
+        {self._handle_point_array(vertices, 2)}
     }}
     face_indices {{
-        {self._json_data["FACEARRAY"]["nfaces"]},
-        {self._handle_face_array(self._json_data["FACEARRAY"]["faces"], 2)}
+        {num_faces},
+        {self._handle_face_array(faces, 2)}
     }}
 }}
         """
 
     def _generate_object(self):
         """ Generates an object for pov file """
-        self._final_file_format += """
-object {
-  Mesh
-  texture { Mesh_Texture }
-  rotate 180*z
-  rotate 90*x
-  translate < -2, 2, 1.5>
-}
-        """
+        for counter in range(len(self._json_data["POINTARRAY"])):
+            self._final_file_format += f"""
+object {{
+  Mesh_{counter}
+  texture {{ Mesh_Texture_{counter} }}
+}}
+            """
 
     def _handle_point_array(self, vertices, num_tabs=0):
         """ Handles vertices from point_array """

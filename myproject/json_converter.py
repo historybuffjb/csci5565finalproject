@@ -19,8 +19,11 @@ class JSONConverter:
     def _handle_chunk(self, chunk):
         """ Handles one given chunk """
         if chunk.name in CONVERTER_LIST:
-            named_data = {chunk.name: chunk.data.pov_convert()}
-            self.data = {**self.data, **named_data}
+            named_data = chunk.data.pov_convert()
+            if chunk.name in self.data:
+                self.data[chunk.name].append(named_data)
+            else:
+                self.data[chunk.name] = [named_data]
 
     def _iter_chunks(self, chunk):
         """ Prints a chunks information """

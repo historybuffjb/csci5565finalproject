@@ -47,9 +47,11 @@ light_source {
     def _generate_camera(self):
         """ Generates a camera for pov file """
         values = self._json_data["POINTARRAY"]
-        location = (
-            f"<{values['maxx'] * 4}, {values['maxy'] * 4}, {values['maxx'] * 4 * 2}>"
-        )
+        multiplier = 8
+        x_val = abs(values["maxx"]) * multiplier
+        y_val = abs(values["maxy"]) * multiplier
+        z_val = abs(values["maxz"]) * multiplier
+        location = f"<{x_val}, {y_val}, {z_val}>"
         self._final_file_format += f"""
 camera {{
   location    {location}
@@ -72,7 +74,14 @@ background {
 
     def _generate_plane(self):
         """ Generates a background for pov file """
-        plane_val = self._json_data["POINTARRAY"]["minz"] - 10
+        plane_val = (
+            min(
+                self._json_data["POINTARRAY"]["minx"],
+                self._json_data["POINTARRAY"]["miny"],
+                self._json_data["POINTARRAY"]["minz"],
+            )
+            * 2
+        )
         self._final_file_format += f"""
 plane {{
   z, {plane_val}

@@ -2,7 +2,6 @@
 import sys
 from struct import unpack
 from groups.abstract import AbstractGroup
-from helpers.vectors import Vec3
 
 
 class POINTARRAY(AbstractGroup):
@@ -22,36 +21,22 @@ class POINTARRAY(AbstractGroup):
         self._max_z = ~sys.maxsize
         for _ in range(count):
             x_val, y_val, z_val = unpack("fff", data[: 3 * 4])
+            if x_val > self._max_x:
+                self._max_x = x_val
+            if x_val < self._min_x:
+                self._min_x = x_val
+            if y_val > self._max_y:
+                self._max_y = y_val
+            if y_val < self._min_y:
+                self._min_y = y_val
+            if z_val > self._max_z:
+                self._max_z = z_val
+            if y_val < self._min_z:
+                self._min_z = z_val
             index = 3 * 4
             data = data[index:]
-            self.vertices.append([x_val, z_val, -y_val])
+            self.vertices.append([x_val, y_val, z_val])
         self.size = 2 + count * 3 * 4
-
-        for counter_1, value_1 in enumerate(self.vertices):
-            index = counter_1 + 1
-            value_1_vec = Vec3(value_1[0], value_1[1], value_1[2])
-            for counter_2, value_2 in list(enumerate(self.vertices))[counter_1:]:
-                value_2_vec = Vec3(value_2[0], value_2[1], value_2[2])
-                if (
-                    value_1_vec.x_val == value_2_vec.x_val
-                    and value_1_vec.y_val == value_2_vec.y_val
-                    and value_1_vec.z_val == value_2_vec.z_val
-                ):
-                    self.vertices[counter_2] = value_1
-
-        for vertice in self.vertices:
-            if vertice[0] > self._max_x:
-                self._max_x = vertice[0]
-            if vertice[0] < self._min_x:
-                self._min_x = vertice[0]
-            if vertice[1] > self._max_y:
-                self._max_y = vertice[1]
-            if vertice[1] < self._min_y:
-                self._min_y = vertice[1]
-            if vertice[2] > self._max_z:
-                self._max_z = vertice[2]
-            if vertice[2] < self._min_z:
-                self._min_z = vertice[2]
 
     def pov_convert(self):
         """ Returns important information """

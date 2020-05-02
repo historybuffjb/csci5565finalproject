@@ -19,7 +19,4 @@ class PovRunner:
     @staticmethod
     def _run_shell_command(args):
         """ runs a given shell command """
-        proc = run(args, stdout=PIPE, stderr=PIPE, check=True)
-        print(proc.stdout)
-        print(proc.stderr)
-        print(proc.returncode)
+        run(args, stdout=PIPE, stderr=PIPE, check=True)

@@ -11,12 +11,12 @@ light_source {
 }
         
 camera {
-  location    <400, 400, 800>
+  location    <366.47705078125, 143.0186767578125, 732.9541015625>
   direction   y
   sky         z
   up          z
   right       (4/3)*x
-  look_at     <0.0, 0, 1.2>
+  look_at     <0, 0, 0>
   angle       20
 }
         
@@ -25,7 +25,7 @@ background {
 }
         
 plane {
-  z, -10
+  z, -138.712158203125
 
   texture {
     pigment {

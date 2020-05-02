@@ -46,16 +46,20 @@ light_source {
 
     def _generate_camera(self):
         """ Generates a camera for pov file """
-        self._final_file_format += """
-camera {
-  location    <400, 400, 800>
+        values = self._json_data["POINTARRAY"]
+        location = (
+            f"<{values['maxx'] * 4}, {values['maxy'] * 4}, {values['maxx'] * 4 * 2}>"
+        )
+        self._final_file_format += f"""
+camera {{
+  location    {location}
   direction   y
   sky         z
   up          z
   right       (4/3)*x
-  look_at     <0.0, 0, 1.2>
+  look_at     <0, 0, 0>
   angle       20
-}
+}}
         """
 
     def _generate_background(self):
@@ -68,33 +72,34 @@ background {
 
     def _generate_plane(self):
         """ Generates a background for pov file """
-        self._final_file_format += """
-plane {
-  z, -10
+        plane_val = self._json_data["POINTARRAY"]["minz"] - 10
+        self._final_file_format += f"""
+plane {{
+  z, {plane_val}
 
-  texture {
-    pigment {
+  texture {{
+    pigment {{
       bozo
-      color_map {
+      color_map {{
         [ 0.0 color rgb<0.356, 0.321, 0.274> ]
         [ 0.1 color rgb<0.611, 0.500, 0.500> ]
         [ 0.4 color rgb<0.745, 0.623, 0.623> ]
         [ 1.0 color rgb<0.837, 0.782, 0.745> ]
-      }
-      warp { turbulence 0.6 }
-    }
-    finish {
+      }}
+      warp {{ turbulence 0.6 }}
+    }}
+    finish {{
       diffuse 0.6
       ambient 0.1
       specular 0.2
-      reflection {
+      reflection {{
         0.2, 0.6
         fresnel on
-      }
+      }}
       conserve_energy
-    }
-  }
-}
+    }}
+  }}
+}}
         """
 
     def _generate_texture(self):

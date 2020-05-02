@@ -15,6 +15,7 @@ from traceback import format_exc
 from myproject.parser import Parser
 from myproject.json_converter import JSONConverter
 from myproject.pov_converter import PovConverter
+from myproject.pov_runner import PovRunner
 
 
 # pylint: disable=W0703
@@ -34,13 +35,22 @@ def main():
             json_converter = JSONConverter(parser.chunks)
             json_converter.convert_json()
             json_folder = root_dir / "jsons"
+            json_folder.mkdir(parents=True, exist_ok=True)
             json_file = f"{path.stem}.json"
             json_converter.save_json(json_folder, json_file)
             pov_converter = PovConverter(json_folder / json_file)
             pov_converter.convert_pov()
             pov_folder = root_dir / "povs"
+            pov_folder.mkdir(parents=True, exist_ok=True)
             pov_file = f"{path.stem}.pov"
             pov_converter.save_pov(pov_folder, pov_file)
+            input_path = pov_folder / pov_file
+            png_folder = root_dir / "pngs"
+            png_folder.mkdir(parents=True, exist_ok=True)
+            png_file = f"{path.stem}.png"
+            output_path = png_folder / png_file
+            pov_runner = PovRunner("povray", input_path, output_path)
+            pov_runner.run_pov()
         except Exception:
             print(f"Failed to load model: {format_exc()}")
         print("*" * 20)

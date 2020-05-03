@@ -1,7 +1,7 @@
 """ JSONConverter converts 3ds chunks into a json dict """
 
 from pathlib import Path
-from json import dump
+from json import dumps
 from helpers.consts import CONVERTER_LIST
 
 
@@ -14,7 +14,6 @@ class JSONConverter:
 
     def convert_json(self):
         """ Converts chunks to pov format """
-        print("Converting to json...")
         self._iter_chunks(self.chunks)
 
     def _handle_chunk(self, chunk):
@@ -36,6 +35,5 @@ class JSONConverter:
         """ Save to output path as a json file """
         out_path = Path(out_path)
         out_file = out_path / out_file
-        print(f"Saving json to {out_file}")
         with open(out_file, "w") as outfile:
-            dump(self.data, outfile)
+            outfile.write(dumps(self.data, indent=4, sort_keys=True))

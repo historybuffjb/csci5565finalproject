@@ -14,7 +14,6 @@ class PovConverter:
 
     def convert_pov(self):
         """ Converts to pov """
-        print("Converting json to pov...")
         with open(self.json_path, "r") as json_file:
             self._json_data = load(json_file)
         self._generate_global_settings()
@@ -44,32 +43,45 @@ light_source {
 }
         """
 
+    # pylint: disable=R0914
     def _generate_camera(self):
         """ Generates a camera for pov file """
         values = self._json_data["POINTARRAY"]
-        multiplier = 8
+        multiplier = 4
         max_x = ~sys.maxsize
         max_y = ~sys.maxsize
         max_z = ~sys.maxsize
-        for value in values:
-            if value["maxx"] > max_x:
-                max_x = value["maxx"]
-            if value["maxy"] > max_y:
-                max_y = value["maxy"]
-            if value["maxz"] > max_z:
-                max_z = value["maxz"]
-        values = self._json_data["MESHMATRIX"]
         min_x = sys.maxsize
         min_y = sys.maxsize
         min_z = sys.maxsize
         for value in values:
-            if value["center"][0] < min_x:
-                min_x = value["center"][0]
-            if value["center"][1] < min_y:
-                min_y = value["center"][1]
-            if value["center"][2] < min_z:
-                min_z = value["center"][2]
-        location = f"<{max_x * multiplier}, {max_y * multiplier}, {max_z * multiplier}>"
+            if value["maxx"] > max_x:
+                max_x = value["maxx"]
+            if value["minx"] < min_x:
+                min_x = value["minx"]
+            if value["maxy"] > max_y:
+                max_y = value["maxy"]
+            if value["miny"] < min_y:
+                min_y = value["miny"]
+            if value["maxz"] > max_z:
+                max_z = value["maxz"]
+            if value["minz"] < min_z:
+                min_z = value["minz"]
+        location_x = (abs(min_x) + abs(max_x)) * multiplier
+        location_y = (abs(min_y) + abs(max_y)) * multiplier
+        location_z = (abs(min_z) + abs(max_z)) * multiplier
+        values = self._json_data["MESHMATRIX"]
+        min_lookat_x = sys.maxsize
+        min_lookat_y = sys.maxsize
+        min_lookat_z = sys.maxsize
+        for value in values:
+            if value["center"][0] < min_lookat_x:
+                min_lookat_x = value["center"][0]
+            if value["center"][1] < min_lookat_y:
+                min_lookat_y = value["center"][1]
+            if value["center"][2] < min_lookat_z:
+                min_lookat_z = value["center"][2]
+        location = f"<{location_x}, {location_y}, {location_z}>"
         self._final_file_format += f"""
 camera {{
   location    {location}
@@ -77,7 +89,7 @@ camera {{
   sky         z
   up          z
   right       (4/3)*x
-  look_at     <{min_x}, {min_y}, {min_z}>
+  look_at     <0, 0, 0>
   angle       20
 }}
         """
@@ -192,6 +204,7 @@ mesh2 {{
 object {{
   Mesh_{counter}
   texture {{ Mesh_Texture_{counter} }}
+  rotate 90*z
 }}
             """
 
@@ -235,6 +248,5 @@ object {{
     def save_pov(self, folder_path, file_name):
         """ Saves to pov file """
         output_file = Path(folder_path) / file_name
-        print(f"Saving pov to {output_file}")
         with open(output_file, "w") as outfile:
             outfile.write(self._final_file_format)

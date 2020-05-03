@@ -48,3 +48,13 @@ from groups.lin_color_24_group import LINCOLOR24  # noqa: F401
 from groups.lin_color_f_group import LINCOLORF  # noqa: F401
 from groups.int_percentage_group import INTPERCENTAGE  # noqa: F401
 from groups.float_percentage_group import FLOATPERCENTAGE  # noqa: F401
+from groups.default_view_group import DEFAULTVIEW  # noqa: F401
+from groups.view_top_group import VIEWTOP  # noqa: F401
+from groups.view_bottom_group import VIEWBOTTOM  # noqa: F401
+from groups.view_left_group import VIEWLEFT  # noqa: F401
+from groups.view_right_group import VIEWRIGHT  # noqa: F401
+from groups.view_front_group import VIEWFRONT  # noqa: F401
+from groups.view_back_group import VIEWBACK  # noqa: F401
+from groups.view_user_group import VIEWUSER  # noqa: F401
+from groups.view_camera_group import VIEWCAMERA  # noqa: F401
+from groups.view_window_group import VIEWWINDOW  # noqa: F401

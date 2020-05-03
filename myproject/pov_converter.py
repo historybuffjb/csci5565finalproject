@@ -14,6 +14,7 @@ class PovConverter:
 
     def convert_pov(self):
         """ Converts to pov """
+        print("Converting json to pov...")
         with open(self.json_path, "r") as json_file:
             self._json_data = load(json_file)
         self._generate_global_settings()
@@ -51,16 +52,24 @@ light_source {
         max_y = ~sys.maxsize
         max_z = ~sys.maxsize
         for value in values:
-            if abs(value["maxx"]) > max_x:
-                max_x = abs(value["maxx"])
-            if abs(value["maxy"]) > max_y:
-                max_y = abs(value["maxy"])
-            if abs(value["maxz"]) > max_z:
-                max_z = abs(value["maxz"])
-        x_val = max_x * multiplier
-        y_val = max_y * multiplier
-        z_val = max_z * multiplier
-        location = f"<{x_val}, {y_val}, {z_val}>"
+            if value["maxx"] > max_x:
+                max_x = value["maxx"]
+            if value["maxy"] > max_y:
+                max_y = value["maxy"]
+            if value["maxz"] > max_z:
+                max_z = value["maxz"]
+        values = self._json_data["MESHMATRIX"]
+        min_x = sys.maxsize
+        min_y = sys.maxsize
+        min_z = sys.maxsize
+        for value in values:
+            if value["center"][0] < min_x:
+                min_x = value["center"][0]
+            if value["center"][1] < min_y:
+                min_y = value["center"][1]
+            if value["center"][2] < min_z:
+                min_z = value["center"][2]
+        location = f"<{max_x * multiplier}, {max_y * multiplier}, {max_z * multiplier}>"
         self._final_file_format += f"""
 camera {{
   location    {location}
@@ -68,7 +77,7 @@ camera {{
   sky         z
   up          z
   right       (4/3)*x
-  look_at     <0, 0, 0>
+  look_at     <{min_x}, {min_y}, {min_z}>
   angle       20
 }}
         """
@@ -226,5 +235,6 @@ object {{
     def save_pov(self, folder_path, file_name):
         """ Saves to pov file """
         output_file = Path(folder_path) / file_name
+        print(f"Saving pov to {output_file}")
         with open(output_file, "w") as outfile:
             outfile.write(self._final_file_format)

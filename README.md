@@ -19,6 +19,12 @@ python -m pre-commit install
 python main.py
 ```
 
+## Instructions
+
+If you have additional models to run just
+drop them into the test_models directory.
+Ensure that they have .3ds as the file
+extension.
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)

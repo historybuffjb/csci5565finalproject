@@ -11,6 +11,7 @@
         http://faydoc.tripod.com/formats/3ds.htm
 """
 from pathlib import Path
+from argparse import ArgumentParser
 from traceback import format_exc
 from myproject.parser import Parser
 from myproject.json_converter import JSONConverter
@@ -19,13 +20,9 @@ from myproject.pov_runner import PovRunner
 
 
 # pylint: disable=W0703
-def main():
+def main(args):
     """ main """
-    root_dir = Path(__file__).resolve().parent
-    pathlist = root_dir / "test_models"
-    pathlist = pathlist.glob("**/*.3ds")
-    # pathlist = [root_dir / "test_models" / "shuttle.3ds"]
-    for path in pathlist:
+    for path in Path(args.modelspath).glob("**/*.3ds"):
         # because path is object not string
         print(f"Getting 3d model for {path}")
         try:
@@ -34,22 +31,19 @@ def main():
             # parser.print_chunks()
             json_converter = JSONConverter(parser.chunks)
             json_converter.convert_json()
-            json_folder = root_dir / "jsons"
-            json_folder.mkdir(parents=True, exist_ok=True)
+            Path(args.jsonspath).mkdir(parents=True, exist_ok=True)
             json_file = f"{path.stem}.json"
-            json_converter.save_json(json_folder, json_file)
-            pov_converter = PovConverter(json_folder / json_file)
+            json_converter.save_json(args.jsonspath, json_file)
+            pov_converter = PovConverter(Path(args.jsonspath) / json_file)
             pov_converter.convert_pov()
-            pov_folder = root_dir / "povs"
-            pov_folder.mkdir(parents=True, exist_ok=True)
+            Path(args.povspath).mkdir(parents=True, exist_ok=True)
             pov_file = f"{path.stem}.pov"
-            pov_converter.save_pov(pov_folder, pov_file)
-            input_path = pov_folder / pov_file
-            png_folder = root_dir / "pngs"
-            png_folder.mkdir(parents=True, exist_ok=True)
+            pov_converter.save_pov(args.povspath, pov_file)
+            input_path = Path(args.povspath) / pov_file
+            Path(args.pngspath).mkdir(parents=True, exist_ok=True)
             png_file = f"{path.stem}.png"
-            output_path = png_folder / png_file
-            pov_runner = PovRunner("povray", input_path, output_path)
+            output_path = Path(args.pngspath) / png_file
+            pov_runner = PovRunner(args.povpath, input_path, output_path)
             pov_runner.run_pov()
         except Exception:
             print(f"Failed to load model: {format_exc()}")
@@ -57,4 +51,15 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    ROOT_DIR = Path(__file__).resolve().parent
+    ROOT_MODELS = ROOT_DIR / "test_models"
+    ROOT_JSONS = ROOT_DIR / "jsons"
+    ROOT_PNGS = ROOT_DIR / "pngs"
+    ROOT_POVS = ROOT_DIR / "povs"
+    PARSER = ArgumentParser(description="Process 3DS models into povray output")
+    PARSER.add_argument("modelspath", type=str, nargs="?", default=f"{ROOT_MODELS}")
+    PARSER.add_argument("povpath", type=str, nargs="?", default="povray")
+    PARSER.add_argument("jsonspath", type=str, nargs="?", default=f"{ROOT_JSONS}")
+    PARSER.add_argument("povspath", type=str, nargs="?", default=f"{ROOT_POVS}")
+    PARSER.add_argument("pngspath", type=str, nargs="?", default=f"{ROOT_PNGS}")
+    main(PARSER.parse_args())

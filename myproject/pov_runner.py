@@ -12,6 +12,7 @@ class PovRunner:
 
     def run_pov(self):
         """ Runs povray """
+        print(f"Running povray and saving to {self._output_path}...")
         self._run_shell_command(
             [self._pov_exec, self._input_path, f"+o{self._output_path}"]
         )

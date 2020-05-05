@@ -1,4 +1,5 @@
 """ Class for running povray """
+from os import cpu_count
 from subprocess import run, PIPE
 
 
@@ -13,7 +14,12 @@ class PovRunner:
     def run_pov(self):
         """ Runs povray """
         self._run_shell_command(
-            [self._pov_exec, self._input_path, f"+o{self._output_path}"]
+            [
+                self._pov_exec,
+                self._input_path,
+                f"+WT{cpu_count()}",
+                f"+o{self._output_path}",
+            ]
         )
 
     @staticmethod

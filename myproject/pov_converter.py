@@ -40,10 +40,38 @@ class PovConverter:
     def _generate_global_settings():
         """ Generates global settings for pov file """
         return """
+#include "colors.inc"
+#include "shapes.inc"
+#include "textures.inc"
+#include "finish.inc"
+#include "glass.inc"
+#include "metals.inc"
+#include "stones.inc"
+#include "woods.inc"
+#include "golds.inc"
 #version 3.7
 
 global_settings {
     assumed_gamma 1
+    radiosity {
+      pretrace_start 0.08
+      pretrace_end   0.01
+      count 150
+      nearest_count 10
+      error_bound 0.5
+      recursion_limit 3
+      low_error_factor 0.5
+      gray_threshold 0.0
+      minimum_reuse 0.005
+      maximum_reuse 0.2
+      brightness 1
+      adc_bailout 0.005
+    }
+    photons {
+    count 20000
+    autostop 0
+    jitter .4
+    }
 }
         """
 
@@ -195,10 +223,6 @@ mesh2 {{
         return f"""
 object {{
   Mesh_{self._object_counter}
-  matrix <{rot_vals[0]}, {rot_vals[1]}, {rot_vals[2]},
-        {rot_vals[3]}, {rot_vals[4]}, {rot_vals[5]},
-        {rot_vals[6]}, {rot_vals[7]}, {rot_vals[8]},
-        {cen_vals[0]}, {cen_vals[1]}, {cen_vals[2]}>
   texture {{ Mesh_Texture_{self._object_counter} }}
   rotate 90*z
 }}

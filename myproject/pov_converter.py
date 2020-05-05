@@ -171,8 +171,6 @@ plane {{
         num_vertices = 0
         face_iters = []
         num_faces = 0
-        rot_vals = []
-        cen_vals = []
         for child in chunk.children:
             if child.name == "POINTARRAY":
                 child_dict = child.data.pov_convert()
@@ -182,22 +180,16 @@ plane {{
                 child_dict = child.data.pov_convert()
                 face_iters = child_dict["faces"]
                 num_faces = child_dict["nfaces"]
-            elif child.name == "MESHMATRIX":
-                child_dict = child.data.pov_convert()
-                rot_vals = child_dict["rot"]
-                cen_vals = child_dict["center"]
         if 0 in [
             len(point_iters),
             num_vertices,
             len(face_iters),
             num_faces,
-            rot_vals,
-            cen_vals,
         ]:
             return ""
         result += self._generate_texture()
         result += self._mesh_string(point_iters, num_vertices, face_iters, num_faces)
-        result += self._generate_object(rot_vals, cen_vals)
+        result += self._generate_object()
         self._object_counter += 1
         return result
 
@@ -217,7 +209,7 @@ mesh2 {{
 }}
         """
 
-    def _generate_object(self, rot_vals, cen_vals):
+    def _generate_object(self):
         """ Generates an object for pov file """
         return f"""
 object {{

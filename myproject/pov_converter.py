@@ -101,7 +101,7 @@ camera {{
   up          z
   right       (4/3)*x
   look_at     <{lookat_location[0]}, {lookat_location[1]}, {lookat_location[2]}>
-  angle       20
+  angle       10
 }}
         """
 

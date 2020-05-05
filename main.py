@@ -79,7 +79,6 @@ def main(args):
 if __name__ == "__main__":
     ROOT_DIR = Path(__file__).resolve().parent
     ROOT_MODELS = ROOT_DIR / "test_models"
-    ROOT_JSONS = ROOT_DIR / "jsons"
     ROOT_PNGS = ROOT_DIR / "pngs"
     ROOT_POVS = ROOT_DIR / "povs"
     PARSER = ArgumentParser(description="Process 3DS models into povray output")
@@ -103,13 +102,6 @@ if __name__ == "__main__":
         nargs="?",
         default="povray",
         help="Path to the pov executable",
-    )
-    PARSER.add_argument(
-        "jsonspath",
-        type=str,
-        nargs="?",
-        default=f"{ROOT_JSONS}",
-        help="Path to the directory that will store the generated json files",
     )
     PARSER.add_argument(
         "povspath",

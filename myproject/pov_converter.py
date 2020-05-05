@@ -101,7 +101,7 @@ camera {{
   up          z
   right       (4/3)*x
   look_at     <{lookat_location[0]}, {lookat_location[1]}, {lookat_location[2]}>
-  angle       10
+  angle       20
 }}
         """
 
@@ -131,12 +131,11 @@ plane {{
       warp {{ turbulence 0.6 }}
     }}
     finish {{
-      diffuse 0.6
-      ambient 0.1
+      diffuse 0
+      ambient 0
       specular 0.2
       reflection {{
-        0.2, 0.6
-        fresnel on
+        1.0
       }}
       conserve_energy
     }}
@@ -223,6 +222,12 @@ mesh2 {{
         return f"""
 object {{
   Mesh_{self._object_counter}
+  photons {{
+    target
+    refraction on
+    reflection on
+    collect on
+    }}
   texture {{ Mesh_Texture_{self._object_counter} }}
   rotate 90*z
 }}

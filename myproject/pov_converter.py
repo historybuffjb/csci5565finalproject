@@ -1,42 +1,56 @@
 """ Converts a specific json file into a pov file """
-import sys
+from sys import maxsize
 from pathlib import Path
-from json import load
 
 
 class PovConverter:
     """ Converts json to pov """
 
-    def __init__(self, json_path):
-        self.json_path = json_path
-        self._json_data = None
+    def __init__(self, parser):
+        self._parser = parser
+        self._object_counter = 0
+        self._minx = maxsize
+        self._miny = maxsize
+        self._minz = maxsize
+        self._maxx = ~maxsize
+        self._maxy = ~maxsize
+        self._maxz = ~maxsize
+        self._meshes_string = ""
         self._final_file_format = ""
 
     def convert_pov(self):
         """ Converts to pov """
-        with open(self.json_path, "r") as json_file:
-            self._json_data = load(json_file)
-        self._generate_global_settings()
-        self._generate_light_source()
-        self._generate_camera()
-        self._generate_background()
-        self._generate_plane()
-        self._generate_mesh()
-        self._generate_object()
+        self._iter_chunks(self._parser.chunks)
+        self._final_file_format += self._generate_global_settings()
+        self._final_file_format += self._generate_light_source()
+        self._final_file_format += self._generate_camera()
+        self._final_file_format += self._generate_background()
+        self._final_file_format += self._generate_plane()
+        self._final_file_format += self._meshes_string
 
-    def _generate_global_settings(self):
+    def _iter_chunks(self, chunk):
+        """ Iterate through parser chunks """
+        if chunk.name == "NTRIOBJECT":
+            self._meshes_string += self._generate_mesh(chunk)
+        else:
+            for child in chunk.children:
+                self._iter_chunks(child)
+
+    @staticmethod
+    def _generate_global_settings():
         """ Generates global settings for pov file """
-        self._final_file_format += """
-#version 3.5
+        return """
+#version 3.7
 
 global_settings {
     assumed_gamma 1
 }
         """
 
-    def _generate_light_source(self):
+    @staticmethod
+    def _generate_light_source():
         """ Generates light source for pov file """
-        self._final_file_format += """
+        return """
 light_source {
     <200, 200, 200>*10000
     rgb 1.3
@@ -46,57 +60,27 @@ light_source {
     # pylint: disable=R0914
     def _generate_camera(self):
         """ Generates a camera for pov file """
-        values = self._json_data["POINTARRAY"]
-        multiplier = 4
-        max_x = ~sys.maxsize
-        max_y = ~sys.maxsize
-        max_z = ~sys.maxsize
-        min_x = sys.maxsize
-        min_y = sys.maxsize
-        min_z = sys.maxsize
-        for value in values:
-            if value["maxx"] > max_x:
-                max_x = value["maxx"]
-            if value["minx"] < min_x:
-                min_x = value["minx"]
-            if value["maxy"] > max_y:
-                max_y = value["maxy"]
-            if value["miny"] < min_y:
-                min_y = value["miny"]
-            if value["maxz"] > max_z:
-                max_z = value["maxz"]
-            if value["minz"] < min_z:
-                min_z = value["minz"]
-        location_x = (abs(min_x) + abs(max_x)) * multiplier
-        location_y = (abs(min_y) + abs(max_y)) * multiplier
-        location_z = (abs(min_z) + abs(max_z)) * multiplier
-        values = self._json_data["MESHMATRIX"]
-        min_lookat_x = sys.maxsize
-        min_lookat_y = sys.maxsize
-        min_lookat_z = sys.maxsize
-        for value in values:
-            if value["center"][0] < min_lookat_x:
-                min_lookat_x = value["center"][0]
-            if value["center"][1] < min_lookat_y:
-                min_lookat_y = value["center"][1]
-            if value["center"][2] < min_lookat_z:
-                min_lookat_z = value["center"][2]
-        location = f"<{location_x}, {location_y}, {location_z}>"
-        self._final_file_format += f"""
+        x_cam_loc = (abs(self._minx) + abs(self._maxx)) * 8
+        y_cam_loc = (abs(self._miny) + abs(self._maxy)) * 8
+        z_cam_loc = (abs(self._minz) + abs(self._maxz)) * 8
+        camera_location = [x_cam_loc, y_cam_loc, z_cam_loc]
+        lookat_location = [self._minx, self._miny, self._minz]
+        return f"""
 camera {{
-  location    {location}
+  location    <{camera_location[0]}, {camera_location[1]}, {camera_location[2]}>
   direction   y
   sky         z
   up          z
   right       (4/3)*x
-  look_at     <0, 0, 0>
-  angle       20
+  look_at     <{lookat_location[0]}, {lookat_location[1]}, {lookat_location[2]}>
+  angle       10
 }}
         """
 
-    def _generate_background(self):
+    @staticmethod
+    def _generate_background():
         """ Generates a background for pov file """
-        self._final_file_format += """
+        return """
 background {
     color rgb <0.60, 0.70, 0.95>
 }
@@ -104,22 +88,9 @@ background {
 
     def _generate_plane(self):
         """ Generates a background for pov file """
-        values = self._json_data["POINTARRAY"]
-        min_x = sys.maxsize
-        min_y = sys.maxsize
-        min_z = sys.maxsize
-        for value in values:
-            if value["minx"] < min_x:
-                min_x = value["minx"]
-            if value["miny"] < min_y:
-                min_y = value["miny"]
-            if value["minz"] < min_z:
-                min_z = value["minz"]
-        plane_val = min(min_x, min_y, min_z) * 2
-        self._final_file_format += f"""
+        return f"""
 plane {{
-  z, {plane_val}
-
+  z, {self._minz}
   texture {{
     pigment {{
       bozo
@@ -145,10 +116,10 @@ plane {{
 }}
         """
 
-    def _generate_texture(self, counter):
+    def _generate_texture(self):
         """ Generates a texture for pov file """
-        self._final_file_format += f"""
-#declare Mesh_Texture_{counter}=
+        return f"""
+#declare Mesh_Texture_{self._object_counter}=
   texture{{
     pigment{{
       uv_mapping
@@ -166,25 +137,40 @@ plane {{
 }}
         """
 
-    def _generate_mesh(self):
+    def _generate_mesh(self, chunk):
         """ Generates a mesh for pov file """
-        point_iters = self._json_data["POINTARRAY"]
-        face_iters = self._json_data["FACEARRAY"]
-        for counter, value in enumerate(point_iters, 0):
-            self._generate_texture(counter)
-            self._mesh_string(
-                value["vertices"],
-                face_iters[counter]["faces"],
-                value["nvertices"],
-                face_iters[counter]["nfaces"],
-                counter,
-            )
+        result = ""
+        point_iters = []
+        num_vertices = 0
+        face_iters = []
+        num_faces = 0
+        rot_vals = []
+        cen_vals = []
+        for child in chunk.children:
+            if child.name == "POINTARRAY":
+                child_dict = child.data.pov_convert()
+                point_iters = child_dict["vertices"]
+                num_vertices = child_dict["nvertices"]
+            elif child.name == "FACEARRAY":
+                child_dict = child.data.pov_convert()
+                face_iters = child_dict["faces"]
+                num_faces = child_dict["nfaces"]
+            elif child.name == "MESHMATRIX":
+                child_dict = child.data.pov_convert()
+                rot_vals = child_dict["rot"]
+                cen_vals = child_dict["center"]
+        if 0 in [len(point_iters), num_vertices, len(face_iters), num_faces, rot_vals, cen_vals]:
+            return ""
+        result += self._generate_texture()
+        result += self._mesh_string(point_iters, num_vertices, face_iters, num_faces)
+        result += self._generate_object(rot_vals, cen_vals)
+        self._object_counter += 1
+        return result
 
-    def _mesh_string(self, vertices, faces, num_vertices, num_faces, counter):
+    def _mesh_string(self, vertices, num_vertices, faces, num_faces):
         """ Generates mesh strings for vertices and faces lists """
-        self._generate_texture(counter)
-        self._final_file_format += f"""
-#declare Mesh_{counter}=
+        return f"""
+#declare Mesh_{self._object_counter}=
 mesh2 {{
     vertex_vectors {{
         {num_vertices},
@@ -197,13 +183,16 @@ mesh2 {{
 }}
         """
 
-    def _generate_object(self):
+    def _generate_object(self, rot_vals, cen_vals):
         """ Generates an object for pov file """
-        for counter in range(len(self._json_data["POINTARRAY"])):
-            self._final_file_format += f"""
+        return f"""
 object {{
-  Mesh_{counter}
-  texture {{ Mesh_Texture_{counter} }}
+  Mesh_{self._object_counter}
+  matrix <{rot_vals[0]}, {rot_vals[1]}, {rot_vals[2]},
+        {rot_vals[3]}, {rot_vals[4]}, {rot_vals[5]},
+        {rot_vals[6]}, {rot_vals[7]}, {rot_vals[8]},
+        {cen_vals[0]}, {cen_vals[1]}, {cen_vals[2]}>
+  texture {{ Mesh_Texture_{self._object_counter} }}
   rotate 90*z
 }}
             """
@@ -214,6 +203,8 @@ object {{
         tabify = ""
         counter = 0
         for vertice in vertices:
+            self._calc_mins(vertice)
+            self._calc_maxs(vertice)
             if counter == 0:
                 result += f"{tabify}{self._convert_3d_into_pov(vertice)}, "
             if counter == 1:
@@ -239,6 +230,23 @@ object {{
                 tabify = "\t" * num_tabs
             counter += 1
         return result
+
+    def _calc_mins(self, vertice):
+        """ Calculate the minimum x y and z value """
+        if vertice[0] < self._minx:
+            self._minx = vertice[0]
+        if vertice[1] < self._miny:
+            self._miny = vertice[1]
+        if vertice[2] < self._minz:
+            self._minz = vertice[2]
+
+    def _calc_maxs(self, vertice):
+        if vertice[0] > self._maxx:
+            self._maxx = vertice[0]
+        if vertice[1] > self._maxy:
+            self._maxy = vertice[1]
+        if vertice[2] > self._maxz:
+            self._maxz = vertice[2]
 
     @staticmethod
     def _convert_3d_into_pov(vertice):

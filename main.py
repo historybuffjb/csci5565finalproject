@@ -17,7 +17,6 @@ from argparse import ArgumentParser
 from traceback import format_exc
 from prettytable import PrettyTable
 from myproject.parser import Parser
-from myproject.json_converter import JSONConverter
 from myproject.pov_converter import PovConverter
 from myproject.pov_runner import PovRunner
 
@@ -31,12 +30,7 @@ def run_converter(path, args):
         parser = Parser(path)
         parser.parse()
         # parser.print_chunks()
-        json_converter = JSONConverter(parser.chunks)
-        json_converter.convert_json()
-        Path(args.jsonspath).mkdir(parents=True, exist_ok=True)
-        json_file = f"{path.stem}.json"
-        json_converter.save_json(args.jsonspath, json_file)
-        pov_converter = PovConverter(Path(args.jsonspath) / json_file)
+        pov_converter = PovConverter(parser)
         pov_converter.convert_pov()
         Path(args.povspath).mkdir(parents=True, exist_ok=True)
         pov_file = f"{path.stem}.pov"
@@ -48,15 +42,14 @@ def run_converter(path, args):
         pov_runner = PovRunner(args.povpath, input_path, output_path)
         pov_runner.run_pov()
     except Exception:
-        print(f"Failed to load model: {format_exc()}")
+        print(f"Failed to load model {path}: {format_exc()}")
     finally:
         end_time = datetime.now() - time_start
     return [str(path.stem), f"{end_time.seconds} seconds"]
 
 
-def in_parallel(args):
+def in_parallel(args, pretty_table):
     """ Runs in parallel """
-    pretty_table = PrettyTable(["name", "run time"])
     pool = multiprocessing.Pool()
     result_async = [
         pool.apply_async(run_converter, args=(path, args))
@@ -65,22 +58,22 @@ def in_parallel(args):
     results = [r.get() for r in result_async]
     for row in results:
         pretty_table.add_row(row)
-    print(pretty_table)
 
 
-def in_sequence(args):
+def in_sequence(args, pretty_table):
     """ Runs consecutively """
-    pretty_table = PrettyTable(["name", "run time"])
     for path in Path(args.modelspath).glob("**/*.3ds"):
         pretty_table.add_row(run_converter(path, args))
-    print(pretty_table)
 
 
 def main(args):
     """ main """
+    pretty_table = PrettyTable(["name", "run time"])
     if args.inparallel:
-        return in_parallel(args)
-    return in_sequence(args)
+        in_parallel(args, pretty_table)
+    else:
+        in_sequence(args, pretty_table)
+    print(pretty_table)
 
 
 if __name__ == "__main__":

@@ -159,7 +159,14 @@ plane {{
                 child_dict = child.data.pov_convert()
                 rot_vals = child_dict["rot"]
                 cen_vals = child_dict["center"]
-        if 0 in [len(point_iters), num_vertices, len(face_iters), num_faces, rot_vals, cen_vals]:
+        if 0 in [
+            len(point_iters),
+            num_vertices,
+            len(face_iters),
+            num_faces,
+            rot_vals,
+            cen_vals,
+        ]:
             return ""
         result += self._generate_texture()
         result += self._mesh_string(point_iters, num_vertices, face_iters, num_faces)

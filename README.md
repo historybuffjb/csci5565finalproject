@@ -15,6 +15,8 @@ python -m pre-commit install
 
 ## Usage
 
+Ensure that you have povray in your path. If you do not you can use the command line option povpath PATH/TO/POV. 
+
 ```bash
 python main.py
 python main.py inparallel modelspath /path/to/models jsonspath /path/to/jsons povspath /path/to/povs pngspath /path/to/pngs

@@ -25,7 +25,7 @@ pycodestyle==2.6.0a1
 pyflakes==2.2.0
 pylint==2.5.0
 pynvim==0.4.1
-PyYAML==5.3.1
+PyYAML==5.4
 regex==2020.4.4
 six==1.14.0
 toml==0.10.0
